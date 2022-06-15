@@ -127,7 +127,8 @@ impl Concert {
         .await
         .expect("CONCERT: Error minting concert tokens");
 
-        msg::reply(ConcertEvent::Purchase { concert_id, amount }, 0).expect("Error in message reply");
+        msg::reply(ConcertEvent::Purchase { concert_id, amount }, 0)
+            .expect("Error in message reply");
     }
 
     // MINT SEVERAL FOR A USER
