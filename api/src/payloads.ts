@@ -1,29 +1,28 @@
 export const payloads = {
-    create: {
-        Create: {
-            creator: `0x5FxowUbNWoiZBavDB2gCq7JtjDX4KhNRH8ZNAGq7p6gDcbZY`,
-            concert_id: 1,
-            number_of_tickets: 100,
-            date: 1001010,
-        },
+    create:  function(creator: string, id: number, tickets: number, date: number) {
+        return {
+            Create: {
+                creator: creator,
+                concert_id: id,
+                number_of_tickets: tickets,
+                date: date,
+            }
+        }
     },
-    hold: {
-        Hold: {
-            concert_id: 1,
-        },
+    hold: function(id: number) {
+        return {
+            Hold: {
+                concert_id: id,
+            }
+        }
     },
-    buyTickets: {
-        BuyTickets: {
-            concert_id: 1,
-            amount: 10,
-            metadata: [
-                {
-                    title: "Ticket #1",
-                    description: "Metallica Concert Ticket",
-                    media: "Row 1 Seat 1",
-                    reference: "Empty",
-                }
-            ],
+    buyTickets: function(id: number, amount: number, metadata: any[]) {
+        return {
+            BuyTickets: {
+                concert_id: id,
+                amount: amount,
+                metadata: metadata,
+            }
         }
     }
 };

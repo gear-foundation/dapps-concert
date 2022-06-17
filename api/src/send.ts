@@ -12,7 +12,12 @@ async function main() {
     const meta =  await getWasmMetadata(metaFile);
     console.log(account);
 
-    let payload = payloads.mint;
+    let payload = payloads.create(
+        `0xf14b3356a630872393a3e041980ed246d829046af2da212d75efe2806e07ff3d`,
+        10,
+        100,
+        101001,
+    );
 
     const gas = await gearApi.program.gasSpent.handle(
         `0x${account.address}`,
@@ -44,4 +49,9 @@ async function main() {
 
 }
 
- main()
+main()
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.log(error);
+        process.exit(1);
+});
