@@ -78,7 +78,7 @@ impl Concert {
             },
             0,
         )
-        .expect("Error in message reply");
+        .expect("Error during a replying with ConcertEvent::Creation");
     }
 
     async fn buy_tickets(
@@ -128,7 +128,7 @@ impl Concert {
         .expect("CONCERT: Error minting concert tokens");
 
         msg::reply(ConcertEvent::Purchase { concert_id, amount }, 0)
-            .expect("Error in message reply");
+            .expect("Error during a replying with ConcertEvent::Purchase");
     }
 
     // MINT SEVERAL FOR A USER
@@ -200,6 +200,7 @@ impl Concert {
                 .expect("CONCERT: Error minging tickets");
             }
         }
-        msg::reply(ConcertEvent::Hold { concert_id }, 0).expect("Error in message reply");
+        msg::reply(ConcertEvent::Hold { concert_id }, 0)
+            .expect("Error during a replying with ConcertEvent::Hold");
     }
 }
