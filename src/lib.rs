@@ -113,7 +113,7 @@ impl Concert {
 
         self.buyers.insert(msg::source());
 
-        msg::send_and_wait_for_reply::<MTKEvent, _>(
+        msg::send_for_reply_as::<_, MTKEvent>(
             self.contract_id,
             MTKAction::Mint {
                 account: msg::source(),
@@ -140,7 +140,7 @@ impl Concert {
         let accounts: Vec<_> = self.buyers.clone().into_iter().collect();
         let tokens: Vec<TokenId> = iter::repeat(self.name).take(accounts.len()).collect();
 
-        let balance_response: MTKEvent = msg::send_and_wait_for_reply(
+        let balance_response: MTKEvent = msg::send_for_reply_as(
             self.contract_id,
             MTKAction::BalanceOfBatch {
                 accounts,
@@ -160,7 +160,7 @@ impl Concert {
             };
         // we know each user balance now
         for balance in &balances {
-            msg::send_and_wait_for_reply::<MTKEvent, _>(
+            msg::send_for_reply_as::<_, MTKEvent>(
                 self.contract_id,
                 MTKAction::Burn {
                     id: balance.id,
@@ -185,7 +185,7 @@ impl Concert {
                     meta.push(token_meta);
                 }
 
-                msg::send_and_wait_for_reply::<MTKEvent, _>(
+                msg::send_for_reply_as::<_, MTKEvent>(
                     self.contract_id,
                     MTKAction::MintBatch {
                         account: *actor,
