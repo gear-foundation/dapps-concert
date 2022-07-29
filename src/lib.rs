@@ -1,7 +1,9 @@
 #![no_std]
 
 use concert_io::*;
-use gstd::{msg, prelude::*, ActorId};
+use gstd::{msg, debug, prelude::*, ActorId};
+use multitoken_io::*;
+use gear_lib::multitoken::io::*;
 
 const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
 const NFT_COUNT: u128 = 1;
@@ -26,7 +28,7 @@ pub struct Concert {
 static mut CONTRACT: Option<Concert> = None;
 
 #[no_mangle]
-pub unsafe extern "C" fn init() {
+unsafe extern "C" fn init() {
     let config: InitConcert = msg::load().expect("Unable to decode InitConfig");
     let concert = Concert {
         owner_id: config.owner_id,
@@ -115,11 +117,9 @@ impl Concert {
 
         msg::send_for_reply_as::<_, MTKEvent>(
             self.contract_id,
-            MTKAction::Mint {
-                account: msg::source(),
-                id: concert_id,
+            MyMTKAction::Mint {
                 amount,
-                meta: None,
+                token_metadata: None,
             },
             0,
         )
@@ -142,7 +142,7 @@ impl Concert {
 
         let balance_response: MTKEvent = msg::send_for_reply_as(
             self.contract_id,
-            MTKAction::BalanceOfBatch {
+            MyMTKAction::BalanceOfBatch {
                 accounts,
                 ids: tokens,
             },
@@ -151,9 +151,9 @@ impl Concert {
         .expect("Error in async message to MTK contract")
         .await
         .expect("CONCERT: Error getting balances from the contract");
-
-        let balances: Vec<BalanceOfBatchReply> =
-            if let MTKEvent::BalanceOfBatch(balance_response) = balance_response {
+        debug!("GOT BALANCES: {:?}", balance_response);
+        let balances: Vec<BalanceReply> =
+            if let MTKEvent::BalanceOf(balance_response) = balance_response {
                 balance_response
             } else {
                 Vec::new()
@@ -162,7 +162,7 @@ impl Concert {
         for balance in &balances {
             msg::send_for_reply_as::<_, MTKEvent>(
                 self.contract_id,
-                MTKAction::Burn {
+                MyMTKAction::Burn {
                     id: balance.id,
                     amount: balance.amount,
                 },
@@ -185,21 +185,25 @@ impl Concert {
                     meta.push(token_meta);
                 }
 
+                debug!("CONTRACT: {:?}", self.contract_id);
+                debug!("ACTOR: {:?}", *actor);
                 msg::send_for_reply_as::<_, MTKEvent>(
                     self.contract_id,
-                    MTKAction::MintBatch {
-                        account: *actor,
+                    MyMTKAction::MintBatch {
                         ids,
                         amounts,
-                        meta,
+                        tokens_metadata: meta,
                     },
                     0,
                 )
                 .expect("Error in async message to MTK contract")
                 .await
                 .expect("CONCERT: Error minging tickets");
+
+                debug!("MINTED?");
             }
         }
+        debug!("FINAL?");
         msg::reply(ConcertEvent::Hold { concert_id }, 0)
             .expect("Error during a replying with ConcertEvent::Hold");
     }

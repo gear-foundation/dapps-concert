@@ -1,5 +1,6 @@
 use concert_io::*;
 use gstd::String;
+use gear_lib::multitoken::io::*;
 
 mod utils;
 use utils::*;

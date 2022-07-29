@@ -2,6 +2,7 @@ use concert_io::*;
 use gstd::ActorId;
 use gstd::{Decode, Encode};
 use gtest::{Program, System, WasmProgram};
+use gear_lib::multitoken::io::*;
 
 pub const USER: u64 = 193;
 pub const MTK_ID: u64 = 2;
@@ -11,75 +12,75 @@ pub const AMOUNT: u128 = 1;
 pub const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
 pub const DATE: u128 = 100000;
 
-#[derive(Debug)]
-struct MultiToken;
+// #[derive(Debug)]
+// struct MultiToken;
 
-impl WasmProgram for MultiToken {
-    fn init(&mut self, _: Vec<u8>) -> Result<Option<Vec<u8>>, &'static str> {
-        Ok(Some(b"INITIALIZED".to_vec()))
-    }
+// impl WasmProgram for MultiToken {
+//     fn init(&mut self, _: Vec<u8>) -> Result<Option<Vec<u8>>, &'static str> {
+//         Ok(Some(b"INITIALIZED".to_vec()))
+//     }
 
-    fn handle(&mut self, payload: Vec<u8>) -> Result<Option<Vec<u8>>, &'static str> {
-        let res = MTKAction::decode(&mut &payload[..]).map_err(|_| "Can not decode")?;
-        match res {
-            MTKAction::Mint {
-                account,
-                id,
-                amount,
-                meta: _,
-            } => Ok(Some(
-                MTKEvent::TransferSingle(TransferSingleReply {
-                    operator: 1.into(),
-                    from: ZERO_ID,
-                    to: account,
-                    id,
-                    amount,
-                })
-                .encode(),
-            )),
-            MTKAction::MintBatch {
-                account,
-                ids,
-                amounts,
-                meta: _,
-            } => Ok(Some(
-                MTKEvent::TransferBatch {
-                    operator: 1.into(),
-                    from: ZERO_ID,
-                    to: account,
-                    ids: ids.to_vec(),
-                    values: amounts.to_vec(),
-                }
-                .encode(),
-            )),
-            MTKAction::Burn { id, amount } => Ok(Some(
-                MTKEvent::TransferSingle(TransferSingleReply {
-                    operator: 1.into(),
-                    from: 1.into(),
-                    to: ZERO_ID,
-                    id,
-                    amount,
-                })
-                .encode(),
-            )),
-            MTKAction::BalanceOfBatch {
-                accounts: _,
-                ids: _,
-            } => {
-                let res = vec![BalanceOfBatchReply {
-                    account: 1.into(),
-                    id: CONCERT_ID,
-                    amount: AMOUNT,
-                }];
-                Ok(Some(MTKEvent::BalanceOfBatch(res).encode()))
-            }
-        }
-    }
+//     fn handle(&mut self, payload: Vec<u8>) -> Result<Option<Vec<u8>>, &'static str> {
+//         let res = MTKAction::decode(&mut &payload[..]).map_err(|_| "Can not decode")?;
+//         match res {
+//             MTKAction::Mint {
+//                 account,
+//                 id,
+//                 amount,
+//                 meta: _,
+//             } => Ok(Some(
+//                 MTKEvent::TransferSingle(TransferSingleReply {
+//                     operator: 1.into(),
+//                     from: ZERO_ID,
+//                     to: account,
+//                     id,
+//                     amount,
+//                 })
+//                 .encode(),
+//             )),
+//             MTKAction::MintBatch {
+//                 account,
+//                 ids,
+//                 amounts,
+//                 meta: _,
+//             } => Ok(Some(
+//                 MTKEvent::TransferBatch {
+//                     operator: 1.into(),
+//                     from: ZERO_ID,
+//                     to: account,
+//                     ids: ids.to_vec(),
+//                     values: amounts.to_vec(),
+//                 }
+//                 .encode(),
+//             )),
+//             MTKAction::Burn { id, amount } => Ok(Some(
+//                 MTKEvent::TransferSingle(TransferSingleReply {
+//                     operator: 1.into(),
+//                     from: 1.into(),
+//                     to: ZERO_ID,
+//                     id,
+//                     amount,
+//                 })
+//                 .encode(),
+//             )),
+//             MTKAction::BalanceOfBatch {
+//                 accounts: _,
+//                 ids: _,
+//             } => {
+//                 let res = vec![BalanceOfBatchReply {
+//                     account: 1.into(),
+//                     id: CONCERT_ID,
+//                     amount: AMOUNT,
+//                 }];
+//                 Ok(Some(MTKEvent::BalanceOfBatch(res).encode()))
+//             }
+//         }
+//     }
 
-    fn handle_reply(&mut self, _: Vec<u8>) -> Result<Option<Vec<u8>>, &'static str> {
-        Ok(None)
-    }
-}
+//     fn handle_reply(&mut self, _: Vec<u8>) -> Result<Option<Vec<u8>>, &'static str> {
+//         Ok(None)
+//     }
+// }
 
 pub fn init_system() -> System {
     let system = System::new();
@@ -90,9 +91,16 @@ pub fn init_system() -> System {
 
 pub fn init_concert(sys: &System) -> Program {
     let concert_program = Program::current(sys);
-    let mtk_program = Program::mock_with_id(sys, MTK_ID, MultiToken);
-    let res = mtk_program.send_bytes(100001, "INIT");
-    assert!(!res.log().is_empty());
+    let mtk_program = Program::from_file(&sys, "./target/multitoken.wasm");
+    let res = mtk_program.send(
+        USER,
+        InitConfig {
+            name: String::from("Multitoken for a concert"),
+            symbol: String::from("MTC"),
+            base_uri: String::from(""),
+        }
+    );
+    assert!(res.log().is_empty());
     assert!(concert_program
         .send(
             USER,
