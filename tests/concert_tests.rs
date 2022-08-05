@@ -1,9 +1,9 @@
-use concert_io::*;
-use gstd::String;
+use gstd::{prelude::*, String, ActorId};
 use gear_lib::multitoken::io::*;
 
 mod utils;
 use utils::*;
+
 
 #[test]
 fn create_concert() {
@@ -12,10 +12,22 @@ fn create_concert() {
     create(
         &concert_program,
         USER.into(),
-        CONCERT_ID,
+        String::from("Sum 41"),
+        String::from("Sum 41 concert in Madrid. 26/08/2022"),
         NUMBER_OF_TICKETS,
         DATE,
+        CONCERT_ID,
     );
+
+    check_current_concert(
+        &concert_program,
+        String::from("Sum 41"),
+        String::from("Sum 41 concert in Madrid. 26/08/2022"),
+        DATE,
+        NUMBER_OF_TICKETS,
+        // since no tickets are bought so far
+        NUMBER_OF_TICKETS,
+    )
 }
 
 #[test]
@@ -25,19 +37,23 @@ fn buy_tickets() {
     create(
         &concert_program,
         USER.into(),
-        CONCERT_ID,
+        String::from("Sum 41"),
+        String::from("Sum 41 concert in Madrid. 26/08/2022"),
         NUMBER_OF_TICKETS,
         DATE,
+        CONCERT_ID,
     );
 
     let metadata = vec![Some(TokenMetadata {
-        title: Some(String::from("SUM41_TORONTO")),
-        description: Some(String::from("SUM 41 Torotno Ticket. Row 4. Seat 4.")),
+        title: Some(String::from("Sum 41 concert in Madrid 26/08/2022")),
+        description: Some(String::from("Sum 41 Madrid 26/08/2022 Ticket. Row 4. Seat 4.")),
         media: Some(String::from("sum41.com")),
         reference: Some(String::from("UNKNOWN")),
     })];
 
-    buy(&concert_program, CONCERT_ID, AMOUNT, metadata, false);
+    buy(&concert_program, CONCERT_ID, AMOUNT, metadata.clone(), false);
+    check_buyers(&concert_program, BTreeSet::from([ActorId::from(USER)]));
+    check_user_tickets(&concert_program, ActorId::from(USER), metadata.clone());
 }
 
 #[test]
@@ -47,9 +63,11 @@ fn buy_tickets_failures() {
     create(
         &concert_program,
         USER.into(),
-        CONCERT_ID,
+        String::from("Sum 41"),
+        String::from("Sum 41 concert in Madrid. 26/08/2022"),
         NUMBER_OF_TICKETS,
         DATE,
+        CONCERT_ID,
     );
 
     // MUST FAIL since we're buying < 1 ticket
@@ -82,14 +100,16 @@ fn hold_concert() {
     create(
         &concert_program,
         USER.into(),
-        CONCERT_ID,
+        String::from("Sum 41"),
+        String::from("Sum 41 concert in Madrid. 26/08/2022"),
         NUMBER_OF_TICKETS,
         DATE,
+        CONCERT_ID,
     );
 
     let metadata = vec![Some(TokenMetadata {
-        title: Some(String::from("SUM41_TORONTO")),
-        description: Some(String::from("SUM 41 Torotno Ticket. Row 4. Seat 4.")),
+        title: Some(String::from("Sum 41 concert in Madrid 26/08/2022")),
+        description: Some(String::from("Sum 41 Madrid 26/08/2022 Ticket. Row 4. Seat 4.")),
         media: Some(String::from("sum41.com")),
         reference: Some(String::from("UNKNOWN")),
     })];
