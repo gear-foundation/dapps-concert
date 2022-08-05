@@ -1,9 +1,8 @@
-use gstd::{prelude::*, String, ActorId};
 use gear_lib::multitoken::io::*;
+use gstd::{prelude::*, ActorId, String};
 
 mod utils;
 use utils::*;
-
 
 #[test]
 fn create_concert() {
@@ -46,14 +45,22 @@ fn buy_tickets() {
 
     let metadata = vec![Some(TokenMetadata {
         title: Some(String::from("Sum 41 concert in Madrid 26/08/2022")),
-        description: Some(String::from("Sum 41 Madrid 26/08/2022 Ticket. Row 4. Seat 4.")),
+        description: Some(String::from(
+            "Sum 41 Madrid 26/08/2022 Ticket. Row 4. Seat 4.",
+        )),
         media: Some(String::from("sum41.com")),
         reference: Some(String::from("UNKNOWN")),
     })];
 
-    buy(&concert_program, CONCERT_ID, AMOUNT, metadata.clone(), false);
+    buy(
+        &concert_program,
+        CONCERT_ID,
+        AMOUNT,
+        metadata.clone(),
+        false,
+    );
     check_buyers(&concert_program, BTreeSet::from([ActorId::from(USER)]));
-    check_user_tickets(&concert_program, ActorId::from(USER), metadata.clone());
+    check_user_tickets(&concert_program, ActorId::from(USER), metadata);
 }
 
 #[test]
@@ -109,7 +116,9 @@ fn hold_concert() {
 
     let metadata = vec![Some(TokenMetadata {
         title: Some(String::from("Sum 41 concert in Madrid 26/08/2022")),
-        description: Some(String::from("Sum 41 Madrid 26/08/2022 Ticket. Row 4. Seat 4.")),
+        description: Some(String::from(
+            "Sum 41 Madrid 26/08/2022 Ticket. Row 4. Seat 4.",
+        )),
         media: Some(String::from("sum41.com")),
         reference: Some(String::from("UNKNOWN")),
     })];

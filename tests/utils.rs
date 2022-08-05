@@ -1,7 +1,7 @@
 use concert_io::*;
+use gear_lib::multitoken::io::*;
 use gstd::{prelude::*, ActorId, Encode};
 use gtest::{Program, System};
-use gear_lib::multitoken::io::*;
 
 pub const USER: u64 = 193;
 pub const MTK_ID: u64 = 2;
@@ -26,7 +26,7 @@ pub fn init_concert(sys: &System) -> Program {
             name: String::from("Multitoken for a concert"),
             symbol: String::from("MTC"),
             base_uri: String::from(""),
-        }
+        },
     );
     assert!(res.log().is_empty());
     assert!(concert_program
@@ -82,13 +82,7 @@ pub fn buy(
     metadata: Vec<Option<TokenMetadata>>,
     should_fail: bool,
 ) {
-    let res = concert_program.send(
-        USER,
-        ConcertAction::BuyTickets {
-            amount,
-            metadata,
-        },
-    );
+    let res = concert_program.send(USER, ConcertAction::BuyTickets { amount, metadata });
 
     if should_fail {
         assert!(res.main_failed());
@@ -98,7 +92,7 @@ pub fn buy(
 }
 
 pub fn hold(concert_program: &Program, concert_id: u128) {
-    let res = concert_program.send(USER, ConcertAction::Hold { });
+    let res = concert_program.send(USER, ConcertAction::Hold {});
 
     assert!(res.contains(&(USER, ConcertEvent::Hold { concert_id }.encode())));
 }
@@ -111,13 +105,15 @@ pub fn check_current_concert(
     number_of_tickets: u128,
     tickets_left: u128,
 ) {
-    match concert_program.meta_state::<ConcertStateQuery, ConcertStateReply>(ConcertStateQuery::CurrentConcert) {
+    match concert_program
+        .meta_state::<ConcertStateQuery, ConcertStateReply>(ConcertStateQuery::CurrentConcert)
+    {
         gstd::Ok(ConcertStateReply::CurrentConcert {
             name: true_name,
             description: true_description,
             date: true_date,
             number_of_tickets: true_number_of_tickets,
-            tickets_left: true_tickets_left
+            tickets_left: true_tickets_left,
         }) => {
             if name != true_name {
                 panic!("CONCERT: Concert name differs.");
@@ -146,7 +142,9 @@ pub fn check_user_tickets(
     user: ActorId,
     tickets: Vec<Option<TokenMetadata>>,
 ) {
-    match concert_program.meta_state::<ConcertStateQuery, ConcertStateReply>(ConcertStateQuery::UserTickets { user }) {
+    match concert_program
+        .meta_state::<ConcertStateQuery, ConcertStateReply>(ConcertStateQuery::UserTickets { user })
+    {
         gstd::Ok(ConcertStateReply::UserTickets {
             tickets: true_tickets,
         }) => {
@@ -160,11 +158,10 @@ pub fn check_user_tickets(
     }
 }
 
-pub fn check_buyers(
-    concert_program: &Program,
-    buyers: BTreeSet<ActorId>,
-) {
-    match concert_program.meta_state::<ConcertStateQuery, ConcertStateReply>(ConcertStateQuery::Buyers) {
+pub fn check_buyers(concert_program: &Program, buyers: BTreeSet<ActorId>) {
+    match concert_program
+        .meta_state::<ConcertStateQuery, ConcertStateReply>(ConcertStateQuery::Buyers)
+    {
         gstd::Ok(ConcertStateReply::Buyers {
             accounts: true_buyers,
         }) => {
@@ -173,7 +170,9 @@ pub fn check_buyers(
             }
         }
         _ => {
-            unreachable!("Unreachable metastate reply for the ConcertStateQuery::Buyers payload has occured")
+            unreachable!(
+                "Unreachable metastate reply for the ConcertStateQuery::Buyers payload has occured"
+            )
         }
     }
 }

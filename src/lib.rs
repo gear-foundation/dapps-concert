@@ -79,8 +79,14 @@ extern "C" fn meta_state() -> *mut [i32; 2] {
             accounts: concert.buyers.clone(),
         },
         ConcertStateQuery::UserTickets { user } => ConcertStateReply::UserTickets {
-            tickets: concert.metadata.get(&user).unwrap_or(&BTreeMap::new()).values().cloned().collect(),
-        }
+            tickets: concert
+                .metadata
+                .get(&user)
+                .unwrap_or(&BTreeMap::new())
+                .values()
+                .cloned()
+                .collect(),
+        },
     };
     gstd::util::to_leak_ptr(reply.encode())
 }
