@@ -15,7 +15,7 @@ pub enum ConcertAction {
         number_of_tickets: u128,
         date: u128,
     },
-    Hold {},
+    Hold,
     BuyTickets {
         amount: u128,
         metadata: Vec<Option<TokenMetadata>>,

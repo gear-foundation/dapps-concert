@@ -105,10 +105,8 @@ pub fn check_current_concert(
     number_of_tickets: u128,
     tickets_left: u128,
 ) {
-    match concert_program
-        .meta_state::<ConcertStateQuery, ConcertStateReply>(ConcertStateQuery::CurrentConcert)
-    {
-        gstd::Ok(ConcertStateReply::CurrentConcert {
+    match concert_program.meta_state(ConcertStateQuery::CurrentConcert) {
+        Ok(ConcertStateReply::CurrentConcert {
             name: true_name,
             description: true_description,
             date: true_date,
@@ -142,10 +140,8 @@ pub fn check_user_tickets(
     user: ActorId,
     tickets: Vec<Option<TokenMetadata>>,
 ) {
-    match concert_program
-        .meta_state::<ConcertStateQuery, ConcertStateReply>(ConcertStateQuery::UserTickets { user })
-    {
-        gstd::Ok(ConcertStateReply::UserTickets {
+    match concert_program.meta_state(ConcertStateQuery::UserTickets { user }) {
+        Ok(ConcertStateReply::UserTickets {
             tickets: true_tickets,
         }) => {
             if tickets != true_tickets {
@@ -159,10 +155,8 @@ pub fn check_user_tickets(
 }
 
 pub fn check_buyers(concert_program: &Program, buyers: BTreeSet<ActorId>) {
-    match concert_program
-        .meta_state::<ConcertStateQuery, ConcertStateReply>(ConcertStateQuery::Buyers)
-    {
-        gstd::Ok(ConcertStateReply::Buyers {
+    match concert_program.meta_state(ConcertStateQuery::Buyers) {
+        Ok(ConcertStateReply::Buyers {
             accounts: true_buyers,
         }) => {
             if buyers != true_buyers {

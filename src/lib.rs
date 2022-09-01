@@ -2,7 +2,7 @@
 
 use concert_io::*;
 use gear_lib::multitoken::io::*;
-use gstd::{debug, msg, prelude::*, ActorId};
+use gstd::{msg, prelude::*, ActorId};
 use multitoken_io::*;
 
 const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
@@ -56,7 +56,7 @@ async unsafe fn main() {
             number_of_tickets,
             date,
         } => concert.create_concert(name, description, creator, number_of_tickets, date),
-        ConcertAction::Hold {} => concert.hold_concert().await,
+        ConcertAction::Hold => concert.hold_concert().await,
         ConcertAction::BuyTickets { amount, metadata } => {
             concert.buy_tickets(amount, metadata).await
         }
@@ -112,7 +112,6 @@ impl Concert {
         self.date = date;
         self.running = true;
         self.tickets_left = number_of_tickets;
-        debug!("CONCET_ID {:?}", self.concert_id);
         msg::reply(
             ConcertEvent::Creation {
                 creator,
