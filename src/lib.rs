@@ -4,6 +4,7 @@ pub mod io;
 
 use gear_lib::multitoken::io::*;
 use gstd::{msg, prelude::*, ActorId};
+use hashbrown::HashMap;
 use multitoken_io::*;
 
 use crate::io::*;
@@ -31,7 +32,7 @@ pub struct Concert {
     pub concert_id: u128,
     pub running: bool,
     // user to token id to metadata
-    pub metadata: BTreeMap<ActorId, BTreeMap<u128, Option<TokenMetadata>>>,
+    pub metadata: HashMap<ActorId, HashMap<u128, Option<TokenMetadata>>>,
 }
 
 static mut CONTRACT: Option<Concert> = None;
@@ -85,7 +86,7 @@ extern "C" fn meta_state() -> *mut [i32; 2] {
             tickets: concert
                 .metadata
                 .get(&user)
-                .unwrap_or(&BTreeMap::new())
+                .unwrap_or(&HashMap::new())
                 .values()
                 .cloned()
                 .collect(),
