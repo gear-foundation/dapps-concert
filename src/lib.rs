@@ -4,7 +4,7 @@ pub mod io;
 
 use gear_lib::multitoken::io::*;
 use gstd::{msg, prelude::*, ActorId};
-use hashbrown::HashMap;
+use hashbrown::{HashMap, HashSet};
 use multitoken_io::*;
 
 use crate::io::*;
@@ -26,7 +26,7 @@ pub struct Concert {
     pub tickets_left: u128,
     pub date: u128,
 
-    pub buyers: BTreeSet<ActorId>,
+    pub buyers: HashSet<ActorId>,
 
     pub id_counter: u128,
     pub concert_id: u128,
@@ -79,8 +79,9 @@ extern "C" fn meta_state() -> *mut [i32; 2] {
             number_of_tickets: concert.number_of_tickets,
             tickets_left: concert.tickets_left,
         },
+
         ConcertStateQuery::Buyers => ConcertStateReply::Buyers {
-            accounts: concert.buyers.clone(),
+            accounts: concert.buyers.iter().copied().collect(),
         },
         ConcertStateQuery::UserTickets { user } => ConcertStateReply::UserTickets {
             tickets: concert
@@ -138,7 +139,7 @@ impl Concert {
         }
 
         if self.tickets_left < amount {
-            panic!("CONCERT: Not enought tickets");
+            panic!("CONCERT: Not enough tickets");
         }
 
         if mtd.len() != amount as usize {
@@ -242,7 +243,7 @@ impl Concert {
                 )
                 .expect("Error in async message to MTK contract")
                 .await
-                .expect("CONCERT: Error minging tickets");
+                .expect("CONCERT: Error minting tickets");
             }
         }
         self.running = false;
