@@ -5,11 +5,9 @@ edition = "2021"
 
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-# TODO: pin to the "stable" branch before the merge.
-gmeta = { git = "https://github.com/gear-tech/gear.git", features = ["codegen"] }
+gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["codegen"] }
 concert-io = { path = "../io" }
 gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.2" }
 
 [build-dependencies]
-# TODO: pin to the "stable" branch before the merge.
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", features = ["metawasm"] }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["metawasm"] }
