@@ -2016,7 +2016,7 @@ dependencies = [
 [[package]]
 name = "multitoken-io"
 version = "0.3.4"
-source = "git+https://github.com/gear-dapps/multitoken.git?tag=0.3.4#8e05dd455da93fd89e9c89d1c31a9b8de28db3c2"
+source = "git+https://github.com/gear-dapps/multitoken.git?tag=0.3.4#13200bca98003c7ec49b97b2000d2a758eed9bdc"
 dependencies = [
  "gear-lib",
  "gmeta",
@@ -3780,7 +3780,7 @@ checksum = "97fee6b57c6a41524a810daee9286c02d7752c4253064d0b05472833a438f675"
 dependencies = [
  "cfg-if",
  "digest 0.10.6",
- "rand 0.8.5",
+ "rand 0.7.3",
  "static_assertions",
 ]
 
