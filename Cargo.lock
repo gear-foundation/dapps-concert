@@ -475,7 +475,7 @@ dependencies = [
 
 [[package]]
 name = "concert-io"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "gear-lib",
  "gmeta",
@@ -486,7 +486,7 @@ dependencies = [
 
 [[package]]
 name = "concert-state"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "concert-io",
  "gear-lib",
