@@ -2297,7 +2297,7 @@ dependencies = [
 [[package]]
 name = "multitoken-io"
 version = "0.3.7"
-source = "git+https://github.com/gear-dapps/multitoken?branch=update-deps#22f50f972e23e6115366dabfc4f09fe56fc28ce7"
+source = "git+https://github.com/gear-dapps/multitoken?tag=0.3.7#49ecfb021578694804635be1674a43e4921607eb"
 dependencies = [
  "gear-lib",
  "gmeta",

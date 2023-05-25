@@ -42,7 +42,7 @@ gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
 gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
 gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-multitoken-io = { git = "https://github.com/gear-dapps/multitoken", branch = "update-deps" }
+multitoken-io = { git = "https://github.com/gear-dapps/multitoken", tag = "0.3.7" }
 concert-state = { path = "state" }
 concert-io = { path = "io" }
 tokio = "1"
