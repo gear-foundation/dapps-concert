@@ -9,7 +9,7 @@ authors.workspace = true
 gstd.workspace = true
 multitoken-io.workspace = true
 gear-lib.workspace = true
-hashbrown = "0.13"
+hashbrown = "0.14"
 concert-io = { path = "io" }
 
 [dev-dependencies]
